@@ -47,6 +47,7 @@ cmd :: proc(
 		data = make_dynamic_array_len_cap([dynamic]u8, 1, read_size)
 		read_from_pipe(&data, read_size, &io)
 	}
+	ok = true
 
 	return
 }
