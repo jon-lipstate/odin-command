@@ -1,0 +1,6 @@
+*.exe
+*.pdb
+*.obj
+ols.json
+.vscode
+*.bin
