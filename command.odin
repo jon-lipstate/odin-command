@@ -7,10 +7,10 @@ import "core:strings"
 import "core:c"
 import "core:runtime"
 //
-main :: proc() {
-	data, err := cmd("odin version", true, 128)
-	fmt.print(string(data[:]))
-}
+// main :: proc() {
+// 	data, err := cmd("odin version", true, 128)
+// 	fmt.print(string(data[:]))
+// }
 
 // Adapted from: https://codereview.stackexchange.com/questions/188630/send-command-and-get-response-from-windows-cmd-prompt-silently-follow-up
 HANDLE :: windows.HANDLE
