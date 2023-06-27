@@ -1,7 +1,7 @@
 {
 	version: "0.0.1",
 	description: "Windows Command Process Runner",
-	url: "https://github.com/jon-lipstate/odin-cmd",
+	url: "https://github.com/jon-lipstate/odin-command",
 	readme: "readme.md",
 	license: "BSD-3",
 	keywords:["cmd","process","windows"],
