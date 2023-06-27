@@ -1,3 +1,4 @@
+//+build Windows
 package cmd
 
 import "core:sys/windows"
