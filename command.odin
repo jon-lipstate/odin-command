@@ -13,6 +13,20 @@ import "core:runtime"
 // 	fmt.print(string(data[:]))
 // }
 
+when ODIN_OS == .Darwin {
+	foreign import lc "system:System.framework"
+} else when ODIN_OS == .Linux {
+	foreign import lc "system:c"
+}
+
+when ODIN_OS == .Darwin || ODIN_OS == .Linux {
+	@(default_calling_convention = "c")
+	foreign lc {
+		popen :: proc(command: cstring, mode: cstring) -> ^libc.FILE ---
+		pclose :: proc(stream: ^libc.FILE) -> int ---
+	}
+}
+
 // Adapted from: https://codereview.stackexchange.com/questions/188630/send-command-and-get-response-from-windows-cmd-prompt-silently-follow-up
 HANDLE :: windows.HANDLE
 IO_Pipes :: struct {
