@@ -1,18 +1,6 @@
 //+build Windows
 package cmd
 
-import "core:sys/windows"
-import "core:mem"
-import "core:fmt"
-import "core:strings"
-import "core:c"
-import "core:runtime"
-//
-// main :: proc() {
-// 	data, err := cmd("odin version", true, 128)
-// 	fmt.print(string(data[:]))
-// }
-
 foreign import kernel32 "system:Kernel32.lib"
 @(default_calling_convention = "stdcall")
 foreign kernel32 {
@@ -20,19 +8,6 @@ foreign kernel32 {
 	PeekNamedPipe :: proc(hNamedPipe: windows.HANDLE, lpBuffer: rawptr, nBufferSize: windows.DWORD, lpBytesRead: ^windows.DWORD, lpTotalBytesAvail: ^windows.DWORD, lpBytesLeftThisMessage: ^windows.DWORD) -> windows.BOOL ---
 }
 
-when ODIN_OS == .Darwin {
-	foreign import lc "system:System.framework"
-} else when ODIN_OS == .Linux {
-	foreign import lc "system:c"
-}
-
-when ODIN_OS == .Darwin || ODIN_OS == .Linux {
-	@(default_calling_convention = "c")
-	foreign lc {
-		popen :: proc(command: cstring, mode: cstring) -> ^libc.FILE ---
-		pclose :: proc(stream: ^libc.FILE) -> int ---
-	}
-}
 
 // Adapted from: https://codereview.stackexchange.com/questions/188630/send-command-and-get-response-from-windows-cmd-prompt-silently-follow-up
 HANDLE :: windows.HANDLE
@@ -42,39 +17,7 @@ IO_Pipes :: struct {
 	read_out:  HANDLE,
 	write_out: HANDLE,
 }
-cmd :: proc(
-	cmd: string,
-	get_response := true,
-	read_size := 4096,
-) -> (
-	data: [dynamic]u8,
-	ok: bool,
-) {
-	when ODIN_OS == .Windows {
-		sec_attr := windows.SECURITY_ATTRIBUTES {
-			nLength        = size_of(windows.SECURITY_ATTRIBUTES),
-			bInheritHandle = true,
-		}
-		jstr := []string{"cmd.exe /c ", cmd, "\x00"}
-		command := strings.join(jstr, "");defer delete(command)
-	
-	
-		io: IO_Pipes
-		if !setup_child_io_pipes(&io, &sec_attr) {
-			return nil, false
-		}
-		if !create_child_process(command, &io) {
-			return nil, false
-		}
-		if get_response {
-			data = make_dynamic_array_len_cap([dynamic]u8, 1, read_size)
-			read_from_pipe(&data, read_size, &io)
-		}
-		ok = true
-	}
 
-	return
-}
 //
 setup_child_io_pipes :: proc(io: ^IO_Pipes, sa_attr: ^windows.SECURITY_ATTRIBUTES) -> (ok: bool) {
 	if !windows.CreatePipe(&io.read_out, &io.write_out, sa_attr, 0) {
@@ -164,3 +107,4 @@ read_from_pipe :: proc(buf: ^[dynamic]byte, size: int, io: ^IO_Pipes) {
 		last_start_index += int(dw_read)
 	}
 }
+
