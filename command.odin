@@ -13,6 +13,13 @@ import "core:runtime"
 // 	fmt.print(string(data[:]))
 // }
 
+foreign import kernel32 "system:Kernel32.lib"
+@(default_calling_convention = "stdcall")
+foreign kernel32 {
+	SetCommTimeouts :: proc(hFile: windows.HANDLE, lpCommTimeouts: ^COMMTIMEOUTS) -> windows.BOOL ---
+	PeekNamedPipe :: proc(hNamedPipe: windows.HANDLE, lpBuffer: rawptr, nBufferSize: windows.DWORD, lpBytesRead: ^windows.DWORD, lpTotalBytesAvail: ^windows.DWORD, lpBytesLeftThisMessage: ^windows.DWORD) -> windows.BOOL ---
+}
+
 when ODIN_OS == .Darwin {
 	foreign import lc "system:System.framework"
 } else when ODIN_OS == .Linux {
@@ -125,12 +132,7 @@ COMMTIMEOUTS :: struct {
 	WriteTotalTimeoutMultiplier: windows.DWORD, /* Multiplier of characters.        */
 	WriteTotalTimeoutConstant:   windows.DWORD, /* Constant in milliseconds.        */
 }
-foreign import kernel32 "system:Kernel32.lib"
-@(default_calling_convention = "stdcall")
-foreign kernel32 {
-	SetCommTimeouts :: proc(hFile: windows.HANDLE, lpCommTimeouts: ^COMMTIMEOUTS) -> windows.BOOL ---
-	PeekNamedPipe :: proc(hNamedPipe: windows.HANDLE, lpBuffer: rawptr, nBufferSize: windows.DWORD, lpBytesRead: ^windows.DWORD, lpTotalBytesAvail: ^windows.DWORD, lpBytesLeftThisMessage: ^windows.DWORD) -> windows.BOOL ---
-}
+
 
 read_from_pipe :: proc(buf: ^[dynamic]byte, size: int, io: ^IO_Pipes) {
 	// pk_len:windows.DWORD
