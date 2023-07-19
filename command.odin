@@ -56,7 +56,7 @@ cmd :: proc(
 			read_from_pipe(&data, read_size, &io)
 		}
 		ok = true
-	} else when ODIN_OS == .Linux || ODIN_OS == .Linux {
+	} else when ODIN_OS == .Darwin || ODIN_OS == .Linux {
 		cmd_cstr := strings.clone_to_cstring(cmd)
 		defer delete(cmd_cstr)
 		file := popen(cmd_cstr, cstring("r"))
