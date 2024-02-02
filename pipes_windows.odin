@@ -1,6 +1,9 @@
 //+build Windows
 package cmd
 
+import "base:runtime"
+import "core:sys/windows"
+
 foreign import kernel32 "system:Kernel32.lib"
 @(default_calling_convention = "stdcall")
 foreign kernel32 {
@@ -107,4 +110,3 @@ read_from_pipe :: proc(buf: ^[dynamic]byte, size: int, io: ^IO_Pipes) {
 		last_start_index += int(dw_read)
 	}
 }
-

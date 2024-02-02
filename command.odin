@@ -1,17 +1,18 @@
 package cmd
 
-import "core:sys/windows"
-import "core:mem"
-import "core:fmt"
-import "core:strings"
+import "base:runtime"
 import "core:c"
 import "core:c/libc"
-import "core:runtime"
+import "core:fmt"
+import "core:mem"
+import "core:strings"
+import "core:sys/windows"
 //
-// main :: proc() {
-// 	data, err := cmd("odin version", true, 128)
-// 	fmt.print(string(data[:]))
-// }
+main :: proc() {
+	data, err := cmd("odin version", true, 128)
+	// data, err := cmd("echo hi", true, 128)
+	fmt.print("result: ", string(data[:]))
+}
 
 when ODIN_OS == .Darwin {
 	foreign import lc "system:System.framework"
@@ -42,8 +43,8 @@ cmd :: proc(
 		}
 		jstr := []string{"cmd.exe /c ", cmd, "\x00"}
 		command := strings.join(jstr, "");defer delete(command)
-	
-	
+
+
 		io: IO_Pipes
 		if !setup_child_io_pipes(&io, &sec_attr) {
 			return nil, false
